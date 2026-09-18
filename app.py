@@ -97,6 +97,7 @@ def main() -> None:
     interface.launch(
         server_name="0.0.0.0",  # Erlaubt Zugriff von außen
         server_port=7860,  # Standard Gradio Port
+        share=False,  # Setze auf True für öffentliche URL
     )
 
 
