@@ -1,0 +1,8 @@
+---
+name: python
+description: Diese Regel zeigt die Python Version die wir immer verwenden
+---
+
+# Overview
+
+Wir verwenden python 3.12.10
