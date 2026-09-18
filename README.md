@@ -1,18 +1,19 @@
-# Chatbot mit Pydantic AI und Gradio
+# Deep Research Agent mit Pydantic AI und Gradio
 
-Eine moderne Chatbot-Applikation, die Pydantic AI für die Backend-Logik und Gradio für die Benutzeroberfläche verwendet.
+Eine moderne Chatbot-Applikation, die Pydantic AI für die Backend-Logik und Gradio für die Benutzeroberfläche verwendet. Der Agent führt eine strukturierte Web-Recherche durch und wertet Artikel via "Deep Reading" aus.
 
 ## Features
 
-- 🤖 **Intelligenter Chatbot**: Nutzt OpenAI GPT-Modelle (gpt-5-mini mit Fallback auf gpt-4o-mini)
-- 🛠️ **Tool-Unterstützung**: Demonstriert Function Calling mit einem `get_current_time` Tool
-- ⚡ **Asynchron**: Vollständig asynchrone Implementierung für optimale Performance
-- 🎨 **Moderne UI**: Nutzt Gradio's `ChatInterface` für eine intuitive Chat-Erfahrung
-- 🔒 **Sicher**: API-Keys werden über `.env` Dateien verwaltet
+- 🤖 **Deep Research**: Zerlegt komplexe Themen in unterschiedliche Blickwinkel.
+- 🔍 **Web-Suche**: Nutzt DuckDuckGo zur gezielten Suche von Informationsquellen.
+- 📖 **Deep Reading**: Ruft gefundene Webseiten auf und extrahiert den Hauptartikeltext asynchron mittels `httpx` und `trafilatura`.
+- ⚡ **Asynchron**: Vollständig asynchrone Pipeline (Recherche, Scraping und Streaming).
+- 🎨 **Moderne UI**: Nutzt Gradio's `ChatInterface` für eine intuitive Chat-Erfahrung mit Live-Statusupdates.
+- 🔒 **Sicher**: API-Keys werden über `.env` Dateien verwaltet.
 
 ## Voraussetzungen
 
-- Python 3.12.10 oder höher
+- Python 3.14.7 (oder kompatible Version)
 - OpenAI API Key ([Hier erhalten](https://platform.openai.com/api-keys))
 
 ## Installation
@@ -75,19 +76,20 @@ http://localhost:7860
 
 ### Beispiel-Interaktionen
 
-- **Einfache Frage**: "Hallo! Wie geht es dir?"
-- **Tool-Nutzung**: "Wie spät ist es?" (nutzt das `get_current_time` Tool)
-- **Allgemeine Fragen**: "Was kannst du für mich tun?"
+- "Nvidia-Aktie"
+- "Quantencomputing Durchbruch 2026"
+- "Auswirkungen von KI auf den Arbeitsmarkt"
 
 ## Projektstruktur
 
 ```
-chatbot/
-├── requirements.txt      # Python-Abhängigkeiten
+Python-Chatbot/
+├── requirements.txt     # Python-Abhängigkeiten
 ├── .env.example         # Vorlage für Umgebungsvariablen
 ├── .env                 # Deine Umgebungsvariablen (nicht in Git)
-├── agent.py             # Pydantic AI Agent Definition
+├── agent.py             # Pydantic AI Agent Definition, DuckDuckGo-Suche & Orchestrierung
 ├── app.py               # Gradio Benutzeroberfläche
+├── scraper.py           # Web-Scraper für Deep Reading
 └── README.md            # Diese Datei
 ```
 
@@ -95,22 +97,15 @@ chatbot/
 
 ### Architektur
 
-- **Backend (`agent.py`)**: 
-  - Definiert den Pydantic AI Agenten
-  - Konfiguriert System-Prompt und Tools
-  - Vollständig asynchron implementiert
+- **Backend (`agent.py` & `scraper.py`)**: 
+  - Definiert den Pydantic AI Planner- und Synthese-Agenten.
+  - Führt eine asynchrone Suche (via DuckDuckGo) und ein asynchrones Scraping der Resultate (Deep Reading) aus.
+  - Generiert einen fundierten Bericht auf Basis echter Webseiten-Inhalte.
 
 - **Frontend (`app.py`)**:
-  - Gradio ChatInterface für die UI
-  - Async-Handler für Agent-Kommunikation
-  - Unterstützt Streaming (falls verfügbar)
+  - Gradio ChatInterface für die UI.
+  - Async-Handler konsumiert den Generator aus `run_deep_research` und streamt Live-Status sowie den finalen Report.
 
-### Tools
-
-Der Bot verfügt aktuell über ein Tool:
-- `get_current_time()`: Gibt die aktuelle Uhrzeit zurück
-
-Weitere Tools können einfach in `agent.py` hinzugefügt werden.
 
 ## Fehlerbehebung
 
@@ -133,31 +128,6 @@ Falls Port 7860 bereits verwendet wird, kannst du in `app.py` den Port ändern:
 interface.launch(server_port=7861)  # Anderen Port verwenden
 ```
 
-## Entwicklung
-
-### Weitere Tools hinzufügen
-
-1. Öffne `agent.py`
-2. Definiere ein neues Tool mit dem `@Tool` Decorator:
-```python
-@Tool
-async def mein_tool(param: str) -> str:
-    """Beschreibung des Tools"""
-    # Tool-Logik hier
-    return "Ergebnis"
-```
-3. Füge das Tool zur Agent-Konfiguration hinzu:
-```python
-agent = Agent(
-    model=model_name,
-    system_prompt=system_prompt,
-    tools=[get_current_time, mein_tool],  # Neues Tool hinzufügen
-)
-```
-
-### System-Prompt anpassen
-
-Ändere den `system_prompt` in der `create_agent()` Funktion in `agent.py`.
 
 ## Lizenz
 
